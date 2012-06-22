@@ -11,13 +11,15 @@ enable :sessions
 AUTHENTICATED_USER = "username"
 AUTHENTICATED_CHANNEL = "channelname"
 
+NODE_URL = "http://10.0.0.19:8080"
+
 def assert
   raise "Assertion failed!" unless yield
 end
 
 def assert_session
-  assert { session[:user] == AUTHENTICATED_USER }
-  assert { session[:channel] == AUTHENTICATED_CHANNEL }
+  #assert { session[:user] == AUTHENTICATED_USER }
+  #assert { session[:channel] == AUTHENTICATED_CHANNEL }
 end
 
 def init_session
@@ -26,7 +28,7 @@ def init_session
 end
 
 def from_node?
-  params[:silent]
+  params['node']
 end
 
 def emit_socketio
@@ -41,9 +43,9 @@ def emit_socketio
 end
 
 $TODOS = {
-  1 => { id: 1, msg: "one" },
-  2 => { id: 2, msg: "two" },
-  3 => { id: 3, msg: "three" }
+  1 => { id: 1, text: "one" },
+  2 => { id: 2, text: "two" },
+  3 => { id: 3, text: "three" }
 }
 
 $SEQ = ($TODOS.keys.max_by { |k,v| k }) + 1
@@ -51,58 +53,91 @@ $SEQ = ($TODOS.keys.max_by { |k,v| k }) + 1
 def create_todo(params)
   id = $SEQ
   $SEQ+=1
-  todo = { id: id, msg: params[:msg] }
+  todo = { id: id, text: params['text'] }
   $TODOS[todo[:id]] = todo
   p $TODOS
   todo
 end
 
 def update_todo(params)
-  todo = $TODOS[params[:id]]
+  todo = $TODOS[params['id']]
   assert todo
-  todo[:msg] = params[:msg]
+  todo[:text] = params['text']
+  todo
+end
+
+def delete_todo(id)
+  $TODOS.delete(id)
+end
+
+def notify_node(type, model)
 end
 
 before do
-  p session
+  puts "Session: #{session}"
+  puts "Params: #{params}"
+  @body = request.body.read
+  puts "Body: #{@body}"
+  @data = (@body ? JSON.parse(@body) : {}) rescue {} # don't care
+  puts "JSON data: #{@data if @data}"
+  params.merge!(@data)
+  puts "Params + JSON: #{params}"
 end
+
+#def crud(action, data)
+#  assert_session
+#  todo = create_todo(params)
+#  if from_node?
+#    todo.to_json
+#  else
+#    notify_node('create', todo)
+#    redirect '/'
+#  end
+#eend
 
 post '/todo' do
   assert_session
   todo = create_todo(params)
-  unless from_node?
-    # notify node.js
+  if from_node?
+    todo.to_json
+  else
+    notify_node('create', todo)
+    redirect '/'
   end
-  redirect '/'
 end
 
 put '/todo' do
   assert_session
-  update_todo(params)
-  unless from_node?
-    # notify node.js
+  todo = update_todo(params)
+  if from_node?
+    todo.to_json
+  else
+    notify_node('update', todo)
+    redirect '/'
   end
-  redirect '/'
 end
 
 delete '/todo/:id' do
   assert_session
-  unless from_node?
-    # notify node.js
+  delete_todo(params['id'])
+  if from_node?
+    params['id']  
+  else
+    notify_node('delete', todo)
+    redirect '/'
   end
-  redirect '/'
 end
 
 get '/todo/:id' do
   assert_session
-  $TODOS[params[:id]].to_json
+  $TODOS[params['id']].to_json
 end
 
 get '/:name?' do |f|
   init_session
-  #f = 'index.html' unless f
+  f = 'index.html' unless f
   if f
     send_file File.join('client', f)
   end
-  erb :todos
+  #erb :todos
 end
