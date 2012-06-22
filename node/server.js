@@ -1,33 +1,11 @@
-var express = require('express')
-  ,  socket = require('socket.io')
-  , app = express.createServer();
+var http = require('http');
+var backboneio = require('backbone.io');
 
-app.listen(8080);
-app.use(express.bodyParser());
+var app = http.createServer();
+app.listen(3000);
 
-var io = socket.listen(app);
+var backend = backboneio.createBackend();
+backend.use(backboneio.middleware.memoryStore());
 
-/*
-app.post('/sync.json', function (req, res) {
-  console.log("in sync.json...");
-  io.sockets.emit('sync', req.body);
-  res.sendfile(__dirname + '/sync.html');
-});
+backboneio.listen(app, { mybackend: backend });
 
-io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
-
-  socket.on("sync", function (data) {
-    console.log('in sync event');
-    io.sockets.emit('sync', data);
-  });
-
-  socket.on("after connect", function () {
-    console.log('hello...');
-    console.log(arguments);
-  });
-});
-*/
