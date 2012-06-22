@@ -11,22 +11,22 @@ backboneio.middleware.sinatra = function () {
   var uri = 'http://10.0.0.14:4567';
 
   return function(req, res, next) {
-    //console.log(req);
+    console.log(req.backend);
     var crud = {
       create: function () {
         req.model.node = true;
-        rest.postJson(uri + '/todo', req.model).on('complete', function (data, response) {
+        rest.postJson(uri + '/' + req.backend, req.model).on('complete', function (data, response) {
           console.log(data);
           res.end(data);
         });
       },
       read: function () {},
       update: function () {
-        rest.postJson(uri + '/todo', req.model).on('complete', function (data, response) {
-          console.log(data);
+        /*
+        rest.put(uri + '/todo', req.model.id).on('complete', function (data, response) {
           res.end(data);
         });
-
+        */
       },
       delete: function () {}
     };
@@ -37,4 +37,4 @@ backboneio.middleware.sinatra = function () {
 }
 
 backend.use(backboneio.middleware.sinatra());
-backboneio.listen(app, { todos: backend });
+backboneio.listen(app, { procedures: backend, todo: backend });
