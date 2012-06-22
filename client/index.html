@@ -4,13 +4,13 @@
   <body>
   <script src="socket.io.js"></script>
   <script>
-    var socket = io.connect('http://localhost:8080');
+    var socket = io.connect('http://10.0.0.19:8080');
     socket.on('news', function (data) {
       console.log(data);
       socket.emit('my other event', { my: 'data' });
     });
 
-    news.on('connect', function () {
+    socket.on('connect', function () {
       console.log('connected...');
     });
   </script>
