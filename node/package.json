@@ -18,7 +18,8 @@
   "dependencies": {
     "socket.io": "latest",
     "express": "latest",
-    "backbone.io": "latest"
+    "backbone.io": "latest",
+    "restler": "latest"
   },
   "keywords": [],
   "engines": {
