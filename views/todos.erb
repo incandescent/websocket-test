@@ -1,0 +1,22 @@
+<html>
+  <head>
+  </head>
+  <body>
+  <script src="socket.io.js"></script>
+  <script>
+  </script>
+    <%= $TODOS %>
+    <% $TODOS.each_value do |todo| %>
+      <div>
+        <%= todo[:id] %>: <%= todo[:msg] %>
+      </div>
+    <% end %>
+    <div>
+      <p>Add todo:</p>
+      <form method="post" action="/todo">
+        <input type="text" name="msg"/>
+        <input type="submit"/>
+      </form>
+    </div>
+  </body>
+</html>
