@@ -4,11 +4,13 @@ var express = require('express')
 
 app.listen(8080);
 app.use(express.bodyParser());
-io = socket.listen(app);
 
+var io = socket.listen(app);
+
+/*
 app.post('/sync.json', function (req, res) {
-  console.log(req.body);
-  socket.emit('news', { hello: 'from sync' });
+  console.log("in sync.json...");
+  io.sockets.emit('sync', req.body);
   res.sendfile(__dirname + '/sync.html');
 });
 
@@ -18,8 +20,14 @@ io.sockets.on('connection', function (socket) {
     console.log(data);
   });
 
+  socket.on("sync", function (data) {
+    console.log('in sync event');
+    io.sockets.emit('sync', data);
+  });
+
   socket.on("after connect", function () {
     console.log('hello...');
     console.log(arguments);
   });
 });
+*/
