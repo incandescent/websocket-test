@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "socket.io": "latest",
-    "express": "latest"
+    "express": "latest",
+    "backbone.io": "latest"
   },
   "keywords": [],
   "engines": {

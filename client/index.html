@@ -2,17 +2,69 @@
   <head>
   </head>
   <body>
-  <script src="socket.io.js"></script>
-  <script>
-    var socket = io.connect('http://10.0.0.19:8080');
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
 
-    socket.on('connect', function () {
-      console.log('connected...');
-    });
-  </script>
+    <div id="todos">
+      <input type="text" name="text" id="text" value="" />
+      <input id="add" type="submit" value="Add ToDo">
+      <ul id="list"></ul>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="socket.io.js"></script>
+    <script src="browser.js"></script>
+    <script>
+      var Todo = Backbone.Model.extend({
+        initialize: function() {
+          this.bind('error', function(model, err) {
+            alert(err.message);
+          });
+        }
+      });
+
+      var Todos = Backbone.Collection.extend({
+        backend: 'todos',
+        model: Todo,
+        initialize: function() {
+          // Setup default backend bindings
+          // (see lib/browser.js for details).
+          this.bindBackend();
+        }
+      });
+
+      var TodosView = Backbone.View.extend({
+        events: {
+          "click #add": "add"
+        },
+
+        initialize: function(options) {
+          this.collection.bind('add', this.render, this);
+          this.collection.bind('reset', this.render, this);
+          this.collection.fetch();
+        },
+
+        render: function() {
+          console.log('in render...');
+          $(this.el).find('#list').html("");
+
+          this.collection.each(function(todo) {
+            this.$el.find('#list').append('<div>' + todo.text + '</div>');
+          });
+        },
+
+        add: function() {
+          console.log('adding...');
+          this.collection.create({ text: this.$('#text').val() }, { wait: true });
+          this.$('#text').val('');
+        }
+      });
+
+      $(function() {
+        window.todos = new Todos();
+        window.TodosView = new TodosView({el: $('#todos'), collection: window.todos});
+      });
+
+    </script>
   </body>
 </html>
