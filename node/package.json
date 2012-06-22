@@ -16,7 +16,8 @@
     "url": "https://github.com/incandescent/sockets/issues"
   },
   "dependencies": {
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "express": "latest"
   },
   "keywords": [],
   "engines": {
