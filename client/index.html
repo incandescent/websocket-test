@@ -9,6 +9,10 @@
       console.log(data);
       socket.emit('my other event', { my: 'data' });
     });
+
+    news.on('connect', function () {
+      console.log('connected...');
+    });
   </script>
   </body>
 </html>
