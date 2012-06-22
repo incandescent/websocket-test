@@ -47,10 +47,9 @@
         render: function() {
           console.log('in render...');
           $(this.el).find('#list').html("");
-
           this.collection.each(function(todo) {
-            this.$el.find('#list').append('<div>' + todo.text + '</div>');
-          });
+            this.$el.find('#list').append('<div>' + todo.get('text') + '</div>');
+          }, this);
         },
 
         add: function() {
