@@ -6,7 +6,7 @@ var rails = function (url) {
   var methodMap = {
     'create': 'post',
     'update': 'put',
-    'delete': 'del',
+    'delete': 'delete',
     'read':   'get'
   };
 
