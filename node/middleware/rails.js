@@ -18,7 +18,8 @@ var rails = function (url) {
       method: methodMap[req.method]
     };
 
-    var path = (req.model.id) ? '/' + req.backend + '/' + req.model.id : '/' + req.backend;
+    var path = '/' + req.backend;
+    path += (req.model.id) ? '/' + req.model.id : '';
 
     rest.json(url + path, req.model, options)
       .on("success", res.end)
